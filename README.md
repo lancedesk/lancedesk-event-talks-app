@@ -1,0 +1,1 @@
+# lancedesk-event-talks-app
