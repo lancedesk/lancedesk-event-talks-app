@@ -1,0 +1,14 @@
+{
+  "name": "tech-talks-event",
+  "version": "1.0.0",
+  "description": "A single-page website for a 1-day tech talks event.",
+  "main": "build.js",
+  "scripts": {
+    "build": "node build.js",
+    "start": "python3 -m http.server --directory dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {}
+}

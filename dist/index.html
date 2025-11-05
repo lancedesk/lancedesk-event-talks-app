@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tech Talks Today</title>
+  <style>body {
+  font-family: sans-serif;
+  margin: 0;
+  background-color: #f4f4f4;
+}
+
+header {
+  background-color: #333;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+.search-container {
+  margin-top: 1rem;
+}
+
+#searchInput {
+  width: 80%;
+  max-width: 400px;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#schedule {
+  width: 90%;
+  max-width: 800px;
+  margin: 2rem auto;
+}
+
+.talk {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+}
+
+.talk:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.talk.hide {
+  display: none;
+}
+
+.talk h2 {
+  margin-top: 0;
+}
+
+.talk .details {
+  display: none;
+  margin-top: 1rem;
+}
+
+.talk.active .details {
+  display: block;
+}
+
+.talk p {
+  margin: 0.5rem 0;
+}
+
+.talk .category {
+  font-style: italic;
+  color: #555;
+}
+</style>
+</head>
+<body>
+  <header>
+    <h1>Tech Talks Today</h1>
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Search by category...">
+    </div>
+  </header>
+
+  <main id="schedule">
+    <!-- Talks will be dynamically inserted here -->
+  </main>
+
+  <script id="talksData" type="application/json">[{"title":"The Future of Artificial Intelligence","speakers":["Jane Doe"],"category":["AI","Machine Learning"],"duration":60,"description":"A deep dive into the latest advancements in AI and what to expect in the coming years."},{"title":"Building Scalable Web Applications","speakers":["John Smith","Peter Jones"],"category":["Web Development","Scalability"],"duration":60,"description":"Learn how to design and build web applications that can handle millions of users."},{"title":"Cybersecurity in the Modern Age","speakers":["Alice Williams"],"category":["Cybersecurity"],"duration":60,"description":"An overview of the current cybersecurity landscape and how to protect your systems."},{"title":"The Rise of Quantum Computing","speakers":["David Brown"],"category":["Quantum Computing","Future Tech"],"duration":60,"description":"Explore the principles of quantum computing and its potential to revolutionize technology."},{"title":"Data Science for Social Good","speakers":["Maria Garcia","Wei Li"],"category":["Data Science","Social Impact"],"duration":60,"description":"Discover how data science is being used to address some of the world's most pressing social challenges."},{"title":"The Ethics of AI","speakers":["Dr. Evelyn Reed"],"category":["AI","Ethics"],"duration":60,"description":"A discussion on the ethical considerations and societal impact of artificial intelligence."}]</script><script>document.addEventListener('DOMContentLoaded', () => {
+  const schedule = document.getElementById('schedule');
+  const searchInput = document.getElementById('searchInput');
+  let talksData = [];
+
+  // Fetch talk data from the embedded JSON
+  try {
+    const talksJSON = document.getElementById('talksData').textContent;
+    talksData = JSON.parse(talksJSON);
+  } catch (error) {
+    console.error('Could not load talks data:', error);
+    schedule.innerHTML = '<p>Error loading schedule. Please try again later.</p>';
+    return;
+  }
+
+  let startTime = new Date();
+  startTime.setHours(10, 0, 0, 0);
+
+  talksData.forEach((talk, index) => {
+    const talkElement = document.createElement('div');
+    talkElement.classList.add('talk');
+
+    const time = new Date(startTime);
+    const endTime = new Date(time.getTime() + talk.duration * 60000);
+
+    talkElement.innerHTML = `
+      <h2>${talk.title}</h2>
+      <p><strong>Time:</strong> ${time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${endTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+      <p><strong>Speaker(s):</strong> ${talk.speakers.join(', ')}</p>
+      <p class="category"><strong>Category:</strong> ${talk.category.join(', ')}</p>
+      <div class="details">
+        <p>${talk.description}</p>
+      </div>
+    `;
+
+    schedule.appendChild(talkElement);
+
+    // Add break
+    if (index === 2) {
+      const breakElement = document.createElement('div');
+      breakElement.classList.add('talk');
+      const breakStartTime = new Date(endTime.getTime() + 10 * 60000);
+      const breakEndTime = new Date(breakStartTime.getTime() + 60 * 60000);
+      breakElement.innerHTML = `<h2>Lunch Break</h2><p><strong>Time:</strong> ${breakStartTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${breakEndTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>`;
+      schedule.appendChild(breakElement);
+      startTime = breakEndTime;
+    } else {
+        startTime = new Date(endTime.getTime() + 10 * 60000); // 10 minute break
+    }
+
+    talkElement.addEventListener('click', () => {
+      talkElement.classList.toggle('active');
+    });
+  });
+
+  searchInput.addEventListener('input', () => {
+    const searchTerm = searchInput.value.toLowerCase();
+    const talks = document.querySelectorAll('.talk');
+
+    talks.forEach(talk => {
+      const category = talk.querySelector('.category').textContent.toLowerCase();
+      if (category.includes(searchTerm)) {
+        talk.classList.remove('hide');
+      } else {
+        talk.classList.add('hide');
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>
